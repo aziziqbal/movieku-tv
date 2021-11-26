@@ -1,89 +1,183 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
+  <v-container>
+    <v-row align="center">
+      <v-col cols="12" md="6" align="start">
+        <div class="title-card">
+          Top Rated Movie
+        </div>
+      </v-col>
+      <v-col cols="12" md="4" class="ml-auto">
+        <v-text-field
+          solo
+          dense
+          hide-details
+          label="Search movie"
+          prepend-inner-icon="mdi-magnify"
+        />
+      </v-col>
+    </v-row>
+    <div class="title-card" />
+    <v-row align="center" class="mt-10">
+      <v-col
+        v-for="(item, index) in data"
+        :key="index"
+        cols="6"
+        md="4"
+        align="start"
+      >
+        <div class="card-movie">
+          <img
+            :src="'https://image.tmdb.org/t/p/w500' + item.backdrop_path"
+            class="img-tmb"
           >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          <v-progress-circular
+            :rotate="360"
+            :size="40"
+            :width="4"
+            :value="item.vote_average"
+            color="white"
+            class="rating"
           >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+            {{ item.vote_average }}%
+          </v-progress-circular>
+          <v-row class="mt-2">
+            <v-col cols="10">
+              <div class="title-movie">
+                {{ item.title }}
+              </div>
+
+              <div class="release-date">
+                {{ item.release_date }}
+              </div>
+            </v-col>
+            <v-col cols="2">
+              <v-btn class="btn-watchlist" x-small fab dark color="indigo">
+                <v-icon dark>
+                  mdi-plus
+                </v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <!-- <div class="release-date">
+            {{ item.release_date }}
+          </div> -->
+
+          <!-- <v-card-actions class="p-0" style="padding-left: 0px">
+            <v-btn class="btn-watchlist">
+              <v-icon left style="padding: 0px">
+                mdi-plus
+              </v-icon>
+              Watchlist
+            </v-btn>
+
+            <v-spacer />
+
+            <v-btn icon @click="show = !show">
+              <v-icon>
+                {{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+              </v-icon>
+            </v-btn>
+          </v-card-actions> -->
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
-
 export default {
-  components: {
-    Logo,
-    VuetifyLogo
+  data () {
+    return {
+      isLoading: false,
+      data: {},
+      show: false,
+      genre: {}
+    }
+  },
+  mounted () {
+    this.getGenre()
+  },
+  methods: {
+    async getGenre () {
+      this.isLoading = true
+      await this.$axios
+        .$get(
+          'https://api.themoviedb.org/3/genre/movie/list?api_key=397d703720f8ff83a7b03b232645e39e&language=en-US'
+        )
+        .then((res) => {
+          this.isLoading = false
+          this.genre = res.genres
+          this.getData()
+        })
+        .catch((err) => {
+          this.isLoading = false
+          console.log('error : ', err)
+        })
+    },
+    async getData () {
+      this.isLoading = true
+      await this.$axios
+        .$get(
+          this.$axios.defaults.baseURL +
+            '/now_playing?api_key=397d703720f8ff83a7b03b232645e39e&language=en-US&page=1'
+        )
+        .then((res) => {
+          this.isLoading = false
+          this.data = res.results
+        })
+        .catch((err) => {
+          this.isLoading = false
+          console.log('error : ', err)
+        })
+    }
   }
 }
 </script>
+<style lang="scss" scoped>
+.title-card {
+  font-size: 20px;
+  color: white;
+}
+.card-movie {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  // margin-bottom: 20px;
+  .movies {
+    padding: 0px;
+  }
+  .img-tmb {
+    width: 100%;
+    border-radius: 10px;
+    height: 200px;
+    object-fit: cover;
+  }
+  .rating {
+    position: absolute;
+    top: 180px;
+    left: 10px;
+    background-color: black;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+  }
+  .title-movie {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+  }
+  .release-date {
+    font-size: 13px;
+    margin-top: 2px;
+    color: white;
+  }
+  .btn-watchlist {
+    // text-transform: capitalize;
+    // font-size: 13px;
+    // letter-spacing: 0px;
+  }
+}
+</style>

@@ -1,90 +1,43 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
+      width="250"
       app
+      dark
+      color="black"
+      class="navigation"
     >
+      <v-list-item class="mt-8 mb-4">
+        <img
+          class="img-logo"
+          src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+        >
+      </v-list-item>
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
+          v-for="item in items"
+          :key="item.title"
+          link
           :to="item.to"
           router
           exact
+          dense
+          class="button-list"
+          active-class="highlighted"
+          color="black"
         >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
+            <v-list-item-title>{{ item.text }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-app-bar>
-    <v-main>
-      <v-container>
+    <v-main style="background: #222b31">
+      <v-container style="padding: 20px">
         <nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
 
@@ -92,26 +45,68 @@
 export default {
   data () {
     return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
+      drawer: true,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
+          to: '/',
+          icon: 'mdi-book-multiple-outline',
+          text: 'Top Rated Movie'
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          to: '/upcoming',
+          icon: 'mdi-folder-image',
+          text: 'Upcoming Movie'
+        },
+        {
+          to: '/playing',
+          icon: 'mdi-toolbox-outline',
+          text: 'Now Playing Movie'
+        },
+        {
+          to: '/popular',
+          icon: 'mdi-hospital-building',
+          text: 'Popular Movie'
         }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+      ]
     }
-  }
+  },
+  methods: {}
 }
 </script>
+<style scoped lang="scss">
+.navigation {
+  opacity: 1;
+  border-right: 0px;
+  .img-logo {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    width: 70%;
+  }
+}
+.v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined) {
+  box-shadow: none;
+}
+.button-list {
+  margin-bottom: 15px;
+  height: 40px;
+  background-color: transparent;
+}
+.highlighted {
+  background: #222b31;
+}
+.theme--dark.v-list-item--active:hover::before,
+.theme--dark.v-list-item--active::before {
+  opacity: 0;
+}
+
+@media screen and (max-width: 769px) {
+  .search {
+    padding-bottom: 0px;
+  }
+  .projek {
+    padding-right: 0px;
+    margin-bottom: 10px;
+  }
+}
+</style>
