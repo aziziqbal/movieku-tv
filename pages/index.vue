@@ -8,6 +8,7 @@
       </v-col>
       <v-col cols="12" md="4" class="ml-auto">
         <v-text-field
+          v-model="search"
           solo
           dense
           hide-details
@@ -19,7 +20,7 @@
     <div class="title-card" />
     <v-row align="center" class="mt-10">
       <v-col
-        v-for="(item, index) in data"
+        v-for="(item, index) in filteredList"
         :key="index"
         cols="6"
         md="4"
@@ -59,27 +60,6 @@
               </v-btn>
             </v-col>
           </v-row>
-
-          <!-- <div class="release-date">
-            {{ item.release_date }}
-          </div> -->
-
-          <!-- <v-card-actions class="p-0" style="padding-left: 0px">
-            <v-btn class="btn-watchlist">
-              <v-icon left style="padding: 0px">
-                mdi-plus
-              </v-icon>
-              Watchlist
-            </v-btn>
-
-            <v-spacer />
-
-            <v-btn icon @click="show = !show">
-              <v-icon>
-                {{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-              </v-icon>
-            </v-btn>
-          </v-card-actions> -->
         </div>
       </v-col>
     </v-row>
@@ -91,9 +71,17 @@ export default {
   data () {
     return {
       isLoading: false,
-      data: {},
+      data: [],
       show: false,
-      genre: {}
+      genre: {},
+      search: ''
+    }
+  },
+  computed: {
+    filteredList () {
+      return this.data.filter((items) => {
+        return items.title.toLowerCase().includes(this.search.toLowerCase())
+      })
     }
   },
   mounted () {
@@ -121,7 +109,7 @@ export default {
       await this.$axios
         .$get(
           this.$axios.defaults.baseURL +
-            '/now_playing?api_key=397d703720f8ff83a7b03b232645e39e&language=en-US&page=1'
+            '/top_rated?api_key=397d703720f8ff83a7b03b232645e39e&language=en-US&page=1'
         )
         .then((res) => {
           this.isLoading = false
@@ -145,7 +133,6 @@ export default {
   width: 100%;
   position: relative;
   cursor: pointer;
-  // margin-bottom: 20px;
   .movies {
     padding: 0px;
   }
@@ -173,11 +160,6 @@ export default {
     font-size: 13px;
     margin-top: 2px;
     color: white;
-  }
-  .btn-watchlist {
-    // text-transform: capitalize;
-    // font-size: 13px;
-    // letter-spacing: 0px;
   }
 }
 </style>
